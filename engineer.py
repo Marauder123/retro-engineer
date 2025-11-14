@@ -7,7 +7,7 @@ import rp2
 # Configure the number of WS2812 LEDs.
 NUM_LEDS = 13
 PIN_NUM = 22
-brightness = 0.2
+brightness = 0.5
 
 @rp2.asm_pio(sideset_init=rp2.PIO.OUT_LOW, out_shiftdir=rp2.PIO.SHIFT_LEFT, autopull=True, pull_thresh=24)
 def ws2812():
@@ -56,11 +56,11 @@ def set_gauge(level):
     if level >= 1 and level <= 4:
         color = RED
     elif level >= 4 and level <= 5:
-        color = YELLOW
+        color = ORANGE
     elif level >= 6 and level <= 8:
         color = GREEN
     elif level >= 9 and level <= 10:
-        color = YELLOW
+        color = ORANGE
     elif level >= 11 and level <= 13:
         color = RED 
     for i in range(level):
@@ -103,6 +103,7 @@ CYAN = (0, 255, 255)
 BLUE = (0, 0, 255)
 PURPLE = (180, 0, 255)
 WHITE = (255, 255, 255)
+ORANGE = (255, 117, 24)
 COLORS = (BLACK, RED, YELLOW, GREEN, CYAN, BLUE, PURPLE, WHITE)
       
 set_gauge(10)

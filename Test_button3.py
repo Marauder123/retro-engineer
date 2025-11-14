@@ -28,3 +28,6 @@ blue_led.value(0)
 blue_btn.irq(trigger = machine.Pin.IRQ_RISING, handler = button_handler)
 green_led.value(0)
 green_btn.irq(trigger = machine.Pin.IRQ_RISING, handler = button_handler)
+
+while True:
+    time.sleep(1)
