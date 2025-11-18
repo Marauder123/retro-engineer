@@ -30,3 +30,4 @@ while True:
             print("No power signal to any subsystems.")
         utime.sleep(0.2)  # Debounce delay to prevent multiple readings
     utime.sleep(0.1)
+    print(pot.value) # read the pot and print the result
