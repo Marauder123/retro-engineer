@@ -65,9 +65,11 @@ def gauge(level):
     elif level >= 9 and level <= 10:
         color = ORANGE
     elif level >= 11 and level <= 13:
-        color = RED 
-    for i in range(level):
+        color = RED
+    for i in range(13):
         pixels_set(i, color)
+    return color
+    
 
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -81,10 +83,10 @@ ORANGE = (255, 117, 24)
 COLORS = (BLACK, RED, YELLOW, GREEN, CYAN, BLUE, PURPLE, WHITE)
 
 
-if correct_gauge != 7:
-    pass 
-#set_gauge(8)
-#pixels_show()
+#if correct_gauge != 7:
+    #pass 
+gauge(8)
+pixels_show()
 
 # Define the GPIO pin the button is connected to
 button_pin = Pin(15, Pin.IN, Pin.PULL_DOWN)
@@ -103,18 +105,27 @@ pot.minimum = 0   # if minimum or maximum are ommitted, they will default to 0 a
 last_slider = 0
 #print(pot.value) 
 
-def slider_game(pot, GREEN, WHITE, RED, ORANGE):
+def slider_game(pot, WHITE):
+    pixels_show()
     sweetspot = math.ceil(random.randint(0,100))
     color = WHITE
+    level = 3
     while color != GREEN:
-        if pot.value >= sweetspot + 50:
-            color = RED
-        elif pot.value >= sweetspot + 25 and pot.value <= sweetspot - 50:
-            color = ORANGE
-        elif pot.value >= sweetspot +10 and pot.value <= sweetspot - 75:
-            color = GREEN
+        if pot.value <= (sweetspot-20) or pot.value >= (sweetspot+20):
+            level = 13
+        elif pot.value <= (sweetspot-10) or pot.value >= (sweetspot+10):
+            level = 10
+        else:
+            level = 7
+        color = gauge(level)
+        pixels_show()
+        time.sleep(2)
+    print("sweetspot reached!")
 
-slider_game(pot, GREEN, WHITE, RED, ORANGE)
+        
+        
+slider_game(pot, WHITE)
+
 
 while True:
     if button_pin.value() == 1:  # Check if the YELLOW button is pressed
@@ -133,7 +144,4 @@ while True:
         else:
             print("No power signal to any subsystems.")
         utime.sleep(0.2)
-    if abs(last_slider - pot.value) > 1:
-        last_slider = pot.value
-        print(pot.value) # read the pot and print the result
     sleep_ms(100)
