@@ -13,6 +13,7 @@ PIN_NUM = 22
 brightness = 0.2
 gauge = 0 
 correct_gauge = 7
+signal = ""
 
 
 @rp2.asm_pio(sideset_init=rp2.PIO.OUT_LOW, out_shiftdir=rp2.PIO.SHIFT_LEFT, autopull=True, pull_thresh=24)
@@ -143,5 +144,19 @@ while True:
             print("Power signal to WEAPONS.")
         else:
             print("No power signal to any subsystems.")
+        if power_down_pin.value() == 0 and pilot_pin.value() == 1:
+            print("R")
+        elif power_down_pin.value() == 0 and science_pin.value() == 1:
+            print("Y")
+        elif power_down_pin.value() == 0 and weapon_pin.value() == 1:
+            print("T")
+        elif power_up_pin.value() == 0 and  pilot_pin.value() == 1:
+            print('Q')
+        elif power_up_pin.value() == 0 and weapon_pin.value() == 1:
+            print('W')
+        elif power_up_pin.value() == 0 and science_pin.value() == 1:
+            print('E')
         utime.sleep(0.2)
     sleep_ms(100)
+    signal = ""
+    
