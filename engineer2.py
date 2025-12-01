@@ -1,5 +1,6 @@
 from PiicoDev_Potentiometer import PiicoDev_Potentiometer
 from PiicoDev_Unified import sleep_ms
+from PiicoDev_CAP1203 import PiicoDev_CAP1203
  
 from machine import Pin
 import utime
@@ -10,10 +11,13 @@ import math
 
 NUM_LEDS = 13
 PIN_NUM = 22
-brightness = 0.2
+brightness = 0.3
 gauge = 0 
 correct_gauge = 7
 signal = ""
+touchSensor = PiicoDev_CAP1203()
+
+special_available = False
 
 
 @rp2.asm_pio(sideset_init=rp2.PIO.OUT_LOW, out_shiftdir=rp2.PIO.SHIFT_LEFT, autopull=True, pull_thresh=24)
@@ -81,6 +85,7 @@ BLUE = (0, 0, 255)
 PURPLE = (180, 0, 255)
 WHITE = (255, 255, 255)
 ORANGE = (255, 117, 24)
+PINK = (255, 51, 153)
 COLORS = (BLACK, RED, YELLOW, GREEN, CYAN, BLUE, PURPLE, WHITE)
 
 
@@ -106,30 +111,33 @@ pot.minimum = 0   # if minimum or maximum are ommitted, they will default to 0 a
 last_slider = 0
 #print(pot.value) 
 
-def slider_game(pot, WHITE):
+def slider_game():
+    print("Slider game started")
     pixels_show()
-    sweetspot = math.ceil(random.randint(0,100))
-    color = WHITE
-    level = 3
-    while color != GREEN:
-        if pot.value <= (sweetspot-20) or pot.value >= (sweetspot+20):
-            level = 13
-        elif pot.value <= (sweetspot-10) or pot.value >= (sweetspot+10):
-            level = 10
-        else:
-            level = 7
-        color = gauge(level)
-        pixels_show()
+    sweetspots = [math.ceil(random.randint(34,66)),math.ceil(random.randint(0,33)),math.ceil(random.randint(67,100))]
+    #random.shuffle(sweetspots)
+    for sweetspot in sweetspots:
+        color = WHITE
+        level = 3
+        while color != GREEN:
+            if pot.value <= (sweetspot-20) or pot.value >= (sweetspot+20):
+                level = 13
+            elif pot.value <= (sweetspot-10) or pot.value >= (sweetspot+10):
+                level = 10
+            else:
+                level = 7
+            color = gauge(level)
+            pixels_show()
+            time.sleep(0.5)
+        print("sweetspot reached!")
         time.sleep(2)
-    print("sweetspot reached!")
+    print("minigame ended")
 
-        
-        
-slider_game(pot, WHITE)
+#slider_game(pot, WHITE)
 
 
 while True:
-    if button_pin.value() == 1:  # Check if the YELLOW button is pressed
+    if button_pin.value() == 1:  # Check if the WHITE button is pressed
         if power_down_pin.value() == 0:
             print("Power down is plugged in.")
         elif power_up_pin.value() == 0:
@@ -156,7 +164,29 @@ while True:
             print('W')
         elif power_up_pin.value() == 0 and science_pin.value() == 1:
             print('E')
-        utime.sleep(0.2)
+        utime.sleep(0.2)    
     sleep_ms(100)
     signal = ""
+    status = touchSensor.read()
+    if status[1] == 1 and status[2] == 1 and not special_available:
+        slider_game()
+        special_available = True
+    elif status[2] == 1 and special_available:
+        print("X")
+        special_available = False
+    elif status[3] == 1 and special_available:
+        print("O")
+        color = PINK
+        special_available = False
+
+    if special_available == True:
+        color = PINK
+    elif special_available == False:
+        color = BLACK
+    for i in range(13):
+        pixels_set(i, color)
+    pixels_show()
+        
+        
+        
     
